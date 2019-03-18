@@ -1,0 +1,3 @@
+/Users/ikachko/42/N-Puzzle/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/ikachko/42/N-Puzzle/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/ikachko/42/N-Puzzle/cmake-build-debug/CMakeFiles/n_puzzle.dir
