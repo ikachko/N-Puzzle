@@ -4,6 +4,7 @@ import sys
 import getopt
 from n_puzzle import puzzle_finding
 
+
 def print_usage():
     print("Usage:\nsolver.py file_name")
 
@@ -54,14 +55,16 @@ def read_from_file(file_name: str):
         return -1
     return matrix
 
+
 def is_valid(puzzle):
-    puzzle_str = list(''.join(str(item) for innerlist in outerlist for item in innerlist)).sort()
+    puzzle_str = list(''.join(str(item) for innerlist in puzzle for item in innerlist)).sort()
     puzzle_set_str = list(set(puzzle_str)).sort()
     if puzzle_str != puzzle_set_str or '0' not in puzzle_str:
         print(puzzle_str)
         print(puzzle_set_str)
         return False
     return True
+
 
 def get_inv_count(puzzle):
     inv_count = 0
@@ -71,6 +74,7 @@ def get_inv_count(puzzle):
                 inv_count += 1
     return inv_count
 
+
 def is_solvable(puzzle):
     if not is_valid(puzzle):
         return False
@@ -79,6 +83,7 @@ def is_solvable(puzzle):
     if inv_count % 2 == 0:
         return True
     return False
+
 
 def make_goal(s):
     ts = s*s
@@ -107,6 +112,19 @@ def make_goal(s):
     return goal
 
 
+def matrix_printer(matrix):
+    n = len(matrix)
+    for i in range(n):
+        sys.stdout.write('|')
+        for j in range(n):
+            sys.stdout.write(str(matrix[i][j]))
+            if j != n - 1:
+                sys.stdout.write('\t')
+            else:
+                sys.stdout.write('|')
+        print()
+
+
 def main():
     argv_len = len(sys.argv)
     if argv_len > 2 or argv_len <= 0:
@@ -122,14 +140,12 @@ def main():
     if matrix == -1:
         return
     print("\nMatrix to solve:")
-    for line in matrix:
-        print(line)
+    matrix_printer(matrix)
     goal = make_goal(len(matrix))
     print("\nGoal:")
-    for line in goal:
-        print(line)
+    matrix_printer(goal)
     print("\n===============================\nSolution:")
-    solution_sequence = puzzle_finding(matrix, goal, 0)
+    solution_sequence = puzzle_finding(matrix, goal, 0, 0)
 
     steps = []
     while solution_sequence:
@@ -141,8 +157,7 @@ def main():
     for step in steps:
         if step.move:
             print('\nMove ' + str(m) + ': ' + step.move)
-        for line in step.puzzle:
-            print(line)
+        matrix_printer(step.puzzle)
         m += 1
 
 if __name__ == "__main__":

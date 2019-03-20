@@ -22,6 +22,16 @@ def heuristic_calc(puzzle, n, goal, h_type):
             i_p, j_p = find_element(puzzle, n, i)
             i_g, j_g = find_element(goal, n, i)
             h = h + math.fabs(i_p - i_g) + math.fabs(j_p - j_g)
+    elif h_type == 1:
+        for i in range(1, n*n):
+            i_p, j_p = find_element(puzzle, n, i)
+            i_g, j_g = find_element(goal, n, i)
+            h = h + math.sqrt(math.pow(i_p - i_g, 2) + math.pow(j_p - j_g, 2))
+    else:
+        for i in range(1, n*n):
+            i_p, j_p = find_element(puzzle, n, i)
+            i_g, j_g = find_element(goal, n, i)
+            h = h + math.sqrt(math.sqrt(math.pow(i_p - i_g, 4) + math.pow(j_p - j_g, 4)))
     return h
 
 
@@ -61,7 +71,7 @@ def puzzle_exsist_in_set(puzzle, set):
     return 0
 
 
-def puzzle_finding(puzzle, goal, h_type):
+def puzzle_finding(puzzle, goal, h_type, serch_type):
     n = len(puzzle)
     open_set = []
     closed_set = []
@@ -70,7 +80,11 @@ def puzzle_finding(puzzle, goal, h_type):
     while len(open_set) > 0:
         best_index = 0
         for i in range(len(open_set)):
-            if open_set[i].f < open_set[best_index].f:
+            if serch_type == 0 and open_set[i].f < open_set[best_index].f:
+                best_index = i
+            elif serch_type == 1 and open_set[i].g < open_set[best_index].g:
+                best_index = i
+            elif serch_type == 2 and open_set[i].h < open_set[best_index].h:
                 best_index = i
         best_step = open_set[best_index]
 
