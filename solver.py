@@ -21,7 +21,7 @@ def read_from_file(file_name: str):
     matrix = []
 
     while f.readable():
-        line = f.readline()[:-1]
+        line = f.readline()[:-1].strip()
         if not line:
             break
         if line[0] == '#':
@@ -32,34 +32,53 @@ def read_from_file(file_name: str):
             else:
                 print("Error")
                 return -1
+        for i in range(num_of_lines):
+            line = f.readline()[:-1].strip()
+            str_nums = list(filter(None, line.split(' ')))
 
-        try:
-            for i in range(num_of_lines):
-                line = f.readline()[:-1]
-                str_nums = line.strip(' ').split(' ')
+            if type(str_nums) != list:
+                print("Error")
+                return -1
 
-                if type(str_nums) != list:
-                    print("Error")
-                    return -1
+            num_count = len(str_nums)
+            if line_length == 0:
+                line_length = num_count
+            elif line_length != num_count:
+                print("Error: number of digits must be the same")
+                return -1
 
-                num_count = len(str_nums)
-                if line_length == 0:
-                    line_length = num_count
-                elif line_length != num_count:
-                    print("Error: number of digits must be the same")
-                    return -1
-
-                numbers = [int(n) for n in str_nums]
-                matrix.append(numbers)
-        except Exception as e:
-
-            print("Error, ", e)
-            return -1
+            numbers = [int(n) for n in str_nums]
+            matrix.append(numbers)
     if len(matrix) != len(matrix[0]):
         print("Error: puzzle must be squared")
         return -1
     return matrix
 
+def is_valid(puzzle):
+    puzzle_str = list(''.join(str(item) for innerlist in outerlist for item in innerlist)).sort()
+    puzzle_set_str = list(set(puzzle_str)).sort()
+    if puzzle_str != puzzle_set_str or '0' not in puzzle_str:
+        print(puzzle_str)
+        print(puzzle_set_str)
+        return False
+    return True
+
+def get_inv_count(puzzle):
+    inv_count = 0
+    for i in range(len(puzzle) - 1):
+        for j in range(i + 1, len(puzzle[i])):
+            if (puzzle[i] > puzzle[j]):
+                inv_count += 1
+    return inv_count
+
+def is_solvable(puzzle):
+    if not is_valid(puzzle):
+        return False
+
+    inv_count = get_inv_count(puzzle)
+    if inv_count % 2 == 0:
+        return True
+    return False
 
 def make_goal(s):
     ts = s*s
@@ -84,14 +103,11 @@ def make_goal(s):
         y += iy
         if cur == s*s:
             cur = 0
-
-    return puzzle
+    goal = [puzzle[i:i + s] for i in range(0, len(puzzle), s)]
+    return goal
 
 
 def main():
-    #print("Hello")
-    #print(len(sys.argv))
-
     argv_len = len(sys.argv)
     if argv_len > 2 or argv_len <= 0:
         print_usage()
@@ -108,8 +124,7 @@ def main():
     print("\nMatrix to solve:")
     for line in matrix:
         print(line)
-    goal_list = make_goal(len(matrix))
-    goal = [goal_list[i:i + 3] for i in range(0, len(goal_list), len(matrix))]
+    goal = make_goal(len(matrix))
     print("\nGoal:")
     for line in goal:
         print(line)
@@ -129,7 +144,6 @@ def main():
         for line in step.puzzle:
             print(line)
         m += 1
-
 
 if __name__ == "__main__":
     main()
