@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import getopt
+import argparse
 from n_puzzle import puzzle_finding
 
 
@@ -126,6 +126,20 @@ def matrix_printer(matrix):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("file_name", type=str, help="Filename")
+    parser.add_argument("-h", "--heuristique", type=int, default=0, help="Type of heurictique. Could be 0 1 or 2.")
+    parser.add_argument("-s", "--serch_type", type=int, default=0, help="Type of heurictique. Could be 1 or 2.")
+    args = parser.parse_args()
+
+    if args.heuristique < 0 or args.heuristique > 2:
+        print("Type of heurictique could be 0, 1 or 2.")
+        sys.exit(1)
+    if args.serch_type < 1 or args.serch_type > 2:
+        print("Type of serch could be 1 or 2.")
+        sys.exit(1)
+
     argv_len = len(sys.argv)
     if argv_len > 2 or argv_len <= 0:
         print_usage()
