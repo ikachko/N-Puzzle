@@ -2,9 +2,11 @@
 
 import sys
 import getopt
+from n_puzzle import puzzle_finding
 
 def print_usage():
     print("Usage:\nsolver.py file_name")
+
 
 def read_from_file(file_name: str):
     try:
@@ -30,28 +32,23 @@ def read_from_file(file_name: str):
             else:
                 print("Error")
                 return -1
+        for i in range(num_of_lines):
+            line = f.readline()[:-1].strip()
+            str_nums = list(filter(None, line.split(' ')))
 
-        try:
-            for i in range(num_of_lines):
-                line = f.readline()[:-1]
-                str_nums = line.strip(' ').split(' ')
+            if type(str_nums) != list:
+                print("Error")
+                return -1
 
-                if type(str_nums) != list:
-                    print("Error")
-                    return -1
+            num_count = len(str_nums)
+            if line_length == 0:
+                line_length = num_count
+            elif line_length != num_count:
+                print("Error: number of digits must be the same")
+                return -1
 
-                num_count = len(str_nums)
-                if line_length == 0:
-                    line_length = num_count
-                elif line_length != num_count:
-                    print("Error: number of digits must be the same")
-                    return -1
-
-                numbers = [int(n) for n in str_nums]
-                matrix.append(numbers)
-        except Exception as e:
-            print("Error, ", e)
-            return -1
+            numbers = [int(n) for n in str_nums]
+            matrix.append(numbers)
     if len(matrix) != len(matrix[0]):
         print("Error: puzzle must be squared")
         return -1
@@ -106,13 +103,11 @@ def make_goal(s):
         y += iy
         if cur == s*s:
             cur = 0
+    goal = [puzzle[i:i + s] for i in range(0, len(puzzle), s)]
+    return goal
 
-    return puzzle
 
 def main():
-    print("Hello")
-    print(len(sys.argv))
-
     argv_len = len(sys.argv)
     if argv_len > 2 or argv_len <= 0:
         print_usage()
@@ -120,15 +115,29 @@ def main():
     elif argv_len == 2:
         matrix = read_from_file(sys.argv[1])
     else:
-        matrix = read_from_stdin()
+        matrix = -1
+    # else:
+    #     matrix = read_from_stdin()
 
     if matrix == -1:
         return
-    print("Matrix to solve:\n", matrix)
-    goal_list = make_goal(len(matrix))
-    goal = [goal_list[i:i + 3] for i in range(0, len(goal_list), len(matrix))]
-    print("Goal:\n", goal)
-
+    print("\nMatrix to solve:")
+    for line in matrix:
+        print(line)
+    goal = make_goal(len(matrix))
+    print("\nGoal:")
+    for line in goal:
+        print(line)
+    print("\n===============================\nSolution:")
+    solution_sequence = puzzle_finding(matrix, goal, 0)
+    m = 1
+    while solution_sequence:
+        for line in solution_sequence.puzzle:
+            print(line)
+        if solution_sequence.move:
+            print('\nMove ' + str(m) + ': ' + solution_sequence.move)
+        solution_sequence = solution_sequence.prev
+        m += 1
 
 if __name__ == "__main__":
     main()
