@@ -76,8 +76,7 @@ def puzzle_finding(puzzle, goal, h_type):
 
         if best_step.puzzle == goal:
             print('Open set states: ' + str(len(open_set)))
-            print('Maximum number of states : ' + str(len(open_set) + len(closed_set)))
-            print()
+            print('Maximum number of states: ' + str(len(open_set) + len(closed_set)))
             return best_step
 
         open_set.remove(best_step)

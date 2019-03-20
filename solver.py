@@ -115,13 +115,19 @@ def main():
         print(line)
     print("\n===============================\nSolution:")
     solution_sequence = puzzle_finding(matrix, goal, 0)
-    m = 1
+
+    steps = []
     while solution_sequence:
-        for line in solution_sequence.puzzle:
-            print(line)
-        if solution_sequence.move:
-            print('\nMove ' + str(m) + ': ' + solution_sequence.move)
+        steps.append(solution_sequence)
         solution_sequence = solution_sequence.prev
+    print("Number of moves to solve: " + str(len(steps) - 1) + "\n")
+    steps = steps[::-1]
+    m = 0
+    for step in steps:
+        if step.move:
+            print('\nMove ' + str(m) + ': ' + step.move)
+        for line in step.puzzle:
+            print(line)
         m += 1
 
 
