@@ -4,6 +4,7 @@ import sys
 import getopt
 from n_puzzle import puzzle_finding
 
+
 def print_usage():
     print("Usage:\nsolver.py file_name")
 
@@ -79,8 +80,14 @@ def is_valid(puzzle):
     puzzle_set = list(set(puzzle_line))
     puzzle_set.sort()
     if puzzle_line != puzzle_set or 0 not in puzzle_line:
+
+def is_valid(puzzle):
+    puzzle_str = list(''.join(str(item) for innerlist in puzzle for item in innerlist)).sort()
+    puzzle_set_str = list(set(puzzle_str)).sort()
+    if puzzle_str != puzzle_set_str or '0' not in puzzle_str:
         return False
     return True
+
 
 def get_inv_count(puzzle):
     inv_count = 0
@@ -93,8 +100,10 @@ def get_inv_count(puzzle):
                 inv_count += 1
     return inv_count
 
+
 def is_solvable(puzzle):
     return is_valid(puzzle) and (get_inv_count(puzzle) % 2 == 0)
+
 
 def make_goal(s):
     ts = s*s
@@ -122,6 +131,18 @@ def make_goal(s):
     goal = [puzzle[i:i + s] for i in range(0, len(puzzle), s)]
     return goal
 
+def matrix_printer(matrix):
+    n = len(matrix)
+    for i in range(n):
+        sys.stdout.write('|')
+        for j in range(n):
+            sys.stdout.write(str(matrix[i][j]))
+            if j != n - 1:
+                sys.stdout.write('\t')
+            else:
+                sys.stdout.write('|')
+        print()
+
 def main():
     argv_len = len(sys.argv)
     if argv_len > 2 or argv_len <= 0:
@@ -138,21 +159,24 @@ def main():
         print("Matrix is not solvable/is not valid")
         return
     print("\nMatrix to solve:")
-    for line in matrix:
-        print(line)
+    matrix_printer(matrix)
     goal = make_goal(len(matrix))
     print("\nGoal:")
-    for line in goal:
-        print(line)
+    matrix_printer(goal)
     print("\n===============================\nSolution:")
-    solution_sequence = puzzle_finding(matrix, goal, 0)
-    m = 1
+    solution_sequence = puzzle_finding(matrix, goal, 0, 0)
+
+    steps = []
     while solution_sequence:
-        for line in solution_sequence.puzzle:
-            print(line)
-        if solution_sequence.move:
-            print('\nMove ' + str(m) + ': ' + solution_sequence.move)
+        steps.append(solution_sequence)
         solution_sequence = solution_sequence.prev
+    print("Number of moves to solve: " + str(len(steps) - 1) + "\n")
+    steps = steps[::-1]
+    m = 0
+    for step in steps:
+        if step.move:
+            print('\nMove ' + str(m) + ': ' + step.move)
+        matrix_printer(step.puzzle)
         m += 1
 
 if __name__ == "__main__":
