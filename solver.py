@@ -84,6 +84,15 @@ def is_valid(puzzle):
         return False
     return True
 
+def find_zero_pos(puzzle):
+    i = len(puzzle) - 1
+    j = len(puzzle) - 1
+    while i >= 0:
+        while j >= 0:
+            if puzzle[i][j] == 0:
+                return len(puzzle) - i
+            j -= 1
+        i -= 1
 
 def get_inv_count(puzzle):
     inv_count = 0
@@ -92,14 +101,27 @@ def get_inv_count(puzzle):
         puzzle_line += line
     for i in range(len(puzzle_line) - 1):
         for j in range(i + 1, len(puzzle_line)):
-            if puzzle_line[i] > puzzle_line[j]:
+            if puzzle_line[i] != 0 and puzzle_line[j] != 0 and puzzle_line[i] > puzzle_line[j]:
                 inv_count += 1
     return inv_count
 
 
 def is_solvable(puzzle):
-    return is_valid(puzzle) and (get_inv_count(puzzle) % 2 == 0)
+    inv_count = get_inv_count(puzzle)
+    pos = find_zero_pos(puzzle)
+    grid_width = len(puzzle[0])
 
+    is_solvable = (((grid_width % 2 != 0) and (inv_count % 2 == 0)) or ((grid_width % 2 == 0) and ((pos % 2 != 0) == (inv_count % 2 == 0))))
+    # if len(puzzle) % 2 != 0:
+    #     solvable = (inv_count % 2 == 0)
+    # else:
+    #
+    #     if pos % 2 == 0:
+    #         solvable = (inv_count % 2 == 0)
+    #     else:
+    #         solvable = (inv_count % 2 != 0)
+    #
+    return is_valid(puzzle) and is_solvable
 
 def make_goal(s):
     ts = s*s
