@@ -58,6 +58,7 @@ def validate_data(data):
         return -1
     return matrix
 
+
 def read_from_file(file_name: str):
     try:
         f = open(file_name, 'r')
@@ -80,11 +81,6 @@ def is_valid(puzzle):
     puzzle_set = list(set(puzzle_line))
     puzzle_set.sort()
     if puzzle_line != puzzle_set or 0 not in puzzle_line:
-
-def is_valid(puzzle):
-    puzzle_str = list(''.join(str(item) for innerlist in puzzle for item in innerlist)).sort()
-    puzzle_set_str = list(set(puzzle_str)).sort()
-    if puzzle_str != puzzle_set_str or '0' not in puzzle_str:
         return False
     return True
 
@@ -131,6 +127,7 @@ def make_goal(s):
     goal = [puzzle[i:i + s] for i in range(0, len(puzzle), s)]
     return goal
 
+
 def matrix_printer(matrix):
     n = len(matrix)
     for i in range(n):
@@ -142,6 +139,7 @@ def matrix_printer(matrix):
             else:
                 sys.stdout.write('|')
         print()
+
 
 def main():
     parser = argparse.ArgumentParser()
