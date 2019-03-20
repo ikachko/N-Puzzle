@@ -19,7 +19,7 @@ def read_from_file(file_name: str):
     matrix = []
 
     while f.readable():
-        line = f.readline()[:-1]
+        line = f.readline()[:-1].strip()
         if not line:
             break
         if line[0] == '#':
@@ -56,6 +56,32 @@ def read_from_file(file_name: str):
         print("Error: puzzle must be squared")
         return -1
     return matrix
+
+def is_valid(puzzle):
+    puzzle_str = list(''.join(str(item) for innerlist in outerlist for item in innerlist)).sort()
+    puzzle_set_str = list(set(puzzle_str)).sort()
+    if puzzle_str != puzzle_set_str or '0' not in puzzle_str:
+        print(puzzle_str)
+        print(puzzle_set_str)
+        return False
+    return True
+
+def get_inv_count(puzzle):
+    inv_count = 0
+    for i in range(len(puzzle) - 1):
+        for j in range(i + 1, len(puzzle[i])):
+            if (puzzle[i] > puzzle[j]):
+                inv_count += 1
+    return inv_count
+
+def is_solvable(puzzle):
+    if not is_valid(puzzle):
+        return False
+
+    inv_count = get_inv_count(puzzle)
+    if inv_count % 2 == 0:
+        return True
+    return False
 
 def make_goal(s):
     ts = s*s
@@ -102,7 +128,6 @@ def main():
     goal_list = make_goal(len(matrix))
     goal = [goal_list[i:i + 3] for i in range(0, len(goal_list), len(matrix))]
     print("Goal:\n", goal)
-
 
 
 if __name__ == "__main__":
