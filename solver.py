@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-import getopt
+import argparse
 from n_puzzle import puzzle_finding
 
 
@@ -164,27 +164,40 @@ def matrix_printer(matrix):
 
 
 def main():
-    argv_len = len(sys.argv)
-    if argv_len > 2 or argv_len <= 0:
-        print_usage()
-        return
-    elif argv_len == 2:
-        matrix = read_from_file(sys.argv[1])
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-s", "--serch_type", type=int, default=0, help="Type of heurictique. Could be 1 or 2.")
+    parser.add_argument("-t", "--typeof_heuristic", type=int, default=0, help="Number of passes")
+    parser.add_argument("-f", "--file_name", type=str, default='', help="Filename")
+    args = parser.parse_args()
+
+    if args.typeof_heuristic < 0 or args.typeof_heuristic > 2:
+        print("Type of heuristic could be 0, 1 or 2.")
+        sys.exit(1)
+    if args.serch_type < 0 or args.serch_type > 2:
+        print("Type of serch could be 1 or 2.")
+        sys.exit(1)
+
+    # argv_len = len(sys.argv)
+    # if len(args):
+    #     parser.print_usage()
+    #     return
+    if args.file_name != '':
+        matrix = read_from_file(args.file_name)
     else:
         matrix = read_from_stdin()
     if matrix == -1:
         return
-
-    if not is_solvable(matrix):
-        print("Matrix is not solvable/is not valid")
-        return
+    # if not is_solvable(matrix):
+    #     print("Matrix is not solvable/is not valid")
+    #     return
     print("\nMatrix to solve:")
     matrix_printer(matrix)
     goal = make_goal(len(matrix))
     print("\nGoal:")
     matrix_printer(goal)
     print("\n===============================\nSolution:")
-    solution_sequence = puzzle_finding(matrix, goal, 0, 0)
+    solution_sequence = puzzle_finding(matrix, goal, args.typeof_heuristic, args.serch_type)
 
     steps = []
     while solution_sequence:
