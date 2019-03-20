@@ -15,40 +15,13 @@ class Step:
         self.f = self.g + self.h
 
 
-def make_goal(s):
-    ts = s*s
-    puzzle = [-1 for i in range(ts)]
-    cur = 1
-    x = 0
-    ix = 1
-    y = 0
-    iy = 0
-    while True:
-        puzzle[x + y*s] = cur
-        if cur == 0:
-            break
-        cur += 1
-        if x + ix == s or x + ix < 0 or (ix != 0 and puzzle[x + ix + y*s] != -1):
-            iy = ix
-            ix = 0
-        elif y + iy == s or y + iy < 0 or (iy != 0 and puzzle[x + (y+iy)*s] != -1):
-            ix = -iy
-            iy = 0
-        x += ix
-        y += iy
-        if cur == s*s:
-            cur = 0
-
-    goal = [puzzle[i:i + s] for i in range(0, len(puzzle), s)]
-    return goal
-
-
-def heuristic_calc(puzzle, n, goal):
+def heuristic_calc(puzzle, n, goal, h_type):
     h = 0
-    for i in range(1, n*n):
-        i_p, j_p = find_element(puzzle, n, i)
-        i_g, j_g = find_element(goal, n, i)
-        h = h + math.fabs(i_p - i_g) + math.fabs(j_p - j_g)
+    if h_type == 0:
+        for i in range(1, n*n):
+            i_p, j_p = find_element(puzzle, n, i)
+            i_g, j_g = find_element(goal, n, i)
+            h = h + math.fabs(i_p - i_g) + math.fabs(j_p - j_g)
     return h
 
 
@@ -88,8 +61,8 @@ def puzzle_exsist_in_set(puzzle, set):
     return 0
 
 
-def puzzle_finding(puzzle, n):
-    goal = make_goal(n)
+def puzzle_finding(puzzle, goal, h_type):
+    n = len(puzzle)
     open_set = []
     closed_set = []
     open_set.append(Step(puzzle, None, None))
@@ -102,7 +75,9 @@ def puzzle_finding(puzzle, n):
         best_step = open_set[best_index]
 
         if best_step.puzzle == goal:
-            print('vse')
+            print('Open set states: ' + str(len(open_set)))
+            print('Maximum number of states : ' + str(len(open_set) + len(closed_set)))
+            print()
             return best_step
 
         open_set.remove(best_step)
@@ -123,21 +98,8 @@ def puzzle_finding(puzzle, n):
                     best_path = 1
 
                 if best_path == 1:
-                    newStep.h = heuristic_calc(newStep.puzzle, n, goal)
+                    newStep.h = heuristic_calc(newStep.puzzle, n, goal, h_type)
                     newStep.calc_f()
                     newStep.prevStep = best_step
     print("unsolvable")
     return None
-
-
-path = puzzle_finding([[1, 2, 3, 4], [10, 12, 14, 5], [0, 13, 15, 6], [9, 11, 8, 7]], 4)
-m = 1
-while path:
-    for line in path.puzzle:
-        for elem in line:
-            print(str(elem))
-    print("--------------")
-    if path.move:
-        print('move ' + str(m) + ': ' + path.move)
-    path = path.prev
-    m += 1
