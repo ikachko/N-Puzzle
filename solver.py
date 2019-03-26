@@ -13,6 +13,7 @@ def read_from_stdin():
     data = sys.stdin.readlines()
     return validate_data(data)
 
+
 def validate_data(data):
     line_length = 0
     num_of_lines = 0
@@ -86,8 +87,8 @@ def is_valid(puzzle):
 
 def find_zero_pos(puzzle):
     i = len(puzzle) - 1
-    j = len(puzzle) - 1
     while i >= 0:
+        j = len(puzzle) - 1
         while j >= 0:
             if puzzle[i][j] == 0:
                 return len(puzzle) - i
@@ -106,12 +107,20 @@ def get_inv_count(puzzle):
     return inv_count
 
 
-def is_solvable(puzzle):
-    inv_count = get_inv_count(puzzle)
-    pos = find_zero_pos(puzzle)
-    grid_width = len(puzzle[0])
+def is_solvable(puzzle, goal):
+    puzzle_inv_count = get_inv_count(puzzle)
+    puzzle_pos = find_zero_pos(puzzle)
 
-    is_solvable = (((grid_width % 2 != 0) and (inv_count % 2 == 0)) or ((grid_width % 2 == 0) and ((pos % 2 != 0) == (inv_count % 2 == 0))))
+    goal_inv_count = get_inv_count(goal)
+    goal_pos = find_zero_pos(goal)
+
+    grid_width = len(puzzle)
+
+    if grid_width % 2 == 0:
+        puzzle_inv_count += puzzle_pos
+        goal_inv_count += goal_pos
+    is_solv = puzzle_inv_count % 2 == goal_inv_count % 2
+    # is_solv = (((grid_width % 2 != 0) and (inv_count % 2 == 0)) or ((grid_width % 2 == 0) and ((pos % 2 != 0) == (inv_count % 2 == 0))))
     # if len(puzzle) % 2 != 0:
     #     solvable = (inv_count % 2 == 0)
     # else:
@@ -121,7 +130,7 @@ def is_solvable(puzzle):
     #     else:
     #         solvable = (inv_count % 2 != 0)
     #
-    return is_valid(puzzle) and is_solvable
+    return is_valid(puzzle) and is_solv
 
 def make_goal(s):
     ts = s*s
@@ -188,12 +197,14 @@ def main():
         matrix = read_from_stdin()
     if matrix == -1:
         return
-    # if not is_solvable(matrix):
-    #     print("Matrix is not solvable/is not valid")
-    #     return
+    goal = make_goal(len(matrix))
+
+    if not is_solvable(matrix, goal):
+        print("Matrix is not solvable/is not valid")
+        return
     print("\nMatrix to solve:")
     matrix_printer(matrix)
-    goal = make_goal(len(matrix))
+
     print("\nGoal:")
     matrix_printer(goal)
     print("\n===============================\nSolution:")
